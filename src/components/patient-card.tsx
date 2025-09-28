@@ -1,7 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Edit, Trash2 } from "lucide-react";
+import { Edit, Trash2, Eye } from "lucide-react";
 import { Patient } from "@/types/patient";
+import { useNavigate } from "react-router-dom";
 
 interface PatientCardProps {
   patient: Patient;
@@ -10,11 +11,21 @@ interface PatientCardProps {
 }
 
 export function PatientCard({ patient, onEdit, onDelete }: PatientCardProps) {
+  const navigate = useNavigate();
+
   return (
     <Card className="w-full">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-lg font-medium">{patient.name}</CardTitle>
         <div className="flex space-x-2">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => navigate(`/patient/${patient.id}`)}
+            aria-label="Ver detalhes"
+          >
+            <Eye className="h-4 w-4" />
+          </Button>
           <Button
             variant="outline"
             size="icon"
