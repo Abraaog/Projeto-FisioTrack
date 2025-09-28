@@ -6,18 +6,20 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { useAssessments } from "@/hooks/useAssessments";
+import { usePatients } from "@/hooks/usePatients";
 import { toast } from "sonner";
 
 export function Assessment() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { getAssessmentById, completeAssessment, getAssessmentResponse } = useAssessments();
+  const { getAssessmentById, completeAssessment } = useAssessments();
+  const { getPatient } = usePatients();
   const [painLevel, setPainLevel] = useState<number>(5);
   const [notes, setNotes] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const assessment = getAssessmentById(id || "");
-  const response = getAssessmentResponse(id || "");
+  const patient = assessment ? getPatient(assessment.patientId) : null;
 
   // Verificar se a avaliação existe
   if (!assessment) {
@@ -87,7 +89,7 @@ export function Assessment() {
     setIsSubmitting(true);
     
     try {
-      completeAssessment(assessment.id, painLevel, notes);
+      completeAssessment(assessment.id, assessment.patientId, painLevel, notes, 'patient');
       
       toast.success("Avaliação enviada com sucesso!", {
         description: "Obrigado por compartilhar seu nível de dor.",

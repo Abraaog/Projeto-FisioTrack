@@ -1,8 +1,14 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { PainRecord } from "@/types/pain-record";
+
+interface PainDataPoint {
+  date: Date;
+  painLevel: number;
+  type?: 'registro' | 'avaliação';
+  notes?: string;
+}
 
 interface PainLevelChartProps {
-  painRecords: PainRecord[];
+  painRecords: PainDataPoint[];
 }
 
 export function PainLevelChart({ painRecords }: PainLevelChartProps) {
@@ -12,12 +18,13 @@ export function PainLevelChart({ painRecords }: PainLevelChartProps) {
     .map((record) => ({
       date: new Date(record.date).toLocaleDateString("pt-BR"),
       painLevel: record.painLevel,
+      type: record.type || 'registro',
     }));
 
   if (painRecords.length === 0) {
     return (
       <div className="text-center py-8 text-muted-foreground">
-        Nenhum registro de dor encontrado para este paciente.
+        Nenhum dado encontrado para este paciente.
       </div>
     );
   }
@@ -33,8 +40,15 @@ export function PainLevelChart({ painRecords }: PainLevelChartProps) {
           <XAxis dataKey="date" />
           <YAxis domain={[0, 10]} />
           <Tooltip 
-            formatter={(value) => [`${value}`, "Nível de dor"]}
-            labelFormatter={(label) => `Data: ${label}`}
+            formatter={(value, name, props) => [
+              `${value}`, 
+              "Nível de dor",
+              props.payload?.type === 'avaliação' ? 'Avaliação Online' : 'Registro Manual'
+            ]}
+            labelFormatter={(label, payload) => {
+              const type = payload?.[0]?.payload?.type || 'registro';
+              return `Data: ${label} (${type === 'avaliação' ? 'Avaliação Online' : 'Registro Manual'})`;
+            }}
           />
           <Line
             type="monotone"

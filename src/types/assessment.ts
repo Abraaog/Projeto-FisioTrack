@@ -13,6 +13,7 @@ export interface Assessment {
 export interface AssessmentResponse {
   id: string;
   assessmentId: string;
+  patientId: string;
   painLevel: number;
   notes?: string;
   submittedAt: Date;

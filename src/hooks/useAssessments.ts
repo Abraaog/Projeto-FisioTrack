@@ -91,11 +91,12 @@ export const useAssessments = () => {
     );
   };
 
-  const completeAssessment = (assessmentId: string, painLevel: number, notes?: string, submittedBy: 'patient' | 'therapist' = 'patient') => {
+  const completeAssessment = (assessmentId: string, patientId: string, painLevel: number, notes?: string, submittedBy: 'patient' | 'therapist' = 'patient') => {
     // Create response
     const newResponse: AssessmentResponse = {
       id: Date.now().toString(),
       assessmentId,
+      patientId,
       painLevel,
       notes,
       submittedAt: new Date(),
@@ -134,6 +135,12 @@ export const useAssessments = () => {
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   };
 
+  const getPatientResponses = (patientId: string) => {
+    return responses
+      .filter((response) => response.patientId === patientId)
+      .sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime());
+  };
+
   const getPendingAssessments = () => {
     return assessments
       .filter((assessment) => !assessment.isSentToPatient && !assessment.isCompleted)
@@ -162,6 +169,7 @@ export const useAssessments = () => {
     getAssessmentById,
     getAssessmentResponse,
     getPatientAssessments,
+    getPatientResponses,
     getPendingAssessments,
     getSentAssessments,
     getCompletedAssessments,

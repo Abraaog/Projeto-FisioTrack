@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Plus, FileText } from "lucide-react";
+import { ArrowLeft, Plus, FileText, TrendingUp } from "lucide-react";
 import { usePatients } from "@/hooks/usePatients";
 import { usePainRecords } from "@/hooks/usePainRecords";
 import { useAssessments } from "@/hooks/useAssessments";
@@ -26,11 +26,12 @@ export function PatientDetail() {
   const navigate = useNavigate();
   const { getPatient } = usePatients();
   const { getPainRecordsByPatient, addPainRecord } = usePainRecords();
-  const { createAssessment } = useAssessments();
+  const { createAssessment, getPatientResponses } = useAssessments();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const patient = getPatient(id || "");
   const painRecords = getPainRecordsByPatient(id || "");
+  const assessmentResponses = getPatientResponses(id || "");
 
   if (!patient) {
     return (
@@ -61,6 +62,22 @@ export function PatientDetail() {
       });
     }
   };
+
+  // Combinar registros de dor e respostas de avaliação para o gráfico
+  const allDataPoints = [
+    ...painRecords.map(record => ({
+      date: record.date,
+      painLevel: record.painLevel,
+      type: 'registro' as const,
+      notes: record.notes
+    })),
+    ...assessmentResponses.map(response => ({
+      date: response.submittedAt,
+      painLevel: response.painLevel,
+      type: 'avaliação' as const,
+      notes: response.notes
+    }))
+  ].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -115,62 +132,71 @@ export function PatientDetail() {
           </CardContent>
         </Card>
 
+        {/* Painel de Progresso */}
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle>Evolução da Dor</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="h-5 w-5" />
+              Painel de Progresso
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <PainLevelChart painRecords={painRecords} />
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Histórico de Registros</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {painRecords.length === 0 ? (
-              <p className="text-center py-4 text-muted-foreground">
-                Nenhum registro de dor cadastrado ainda.
-              </p>
-            ) : (
-              <div className="space-y-4">
-                {painRecords.map((record) => (
-                  <div key={record.id} className="border rounded-lg p-4">
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                      <div>
-                        <h3 className="font-medium">
-                          {format(new Date(record.date), "PPP", { locale: ptBR })}
-                        </h3>
-                        <p className="text-sm text-muted-foreground">
-                          Nível de dor: <span className="font-medium">{record.painLevel}/10</span>
-                        </p>
-                      </div>
-                      <Badge
-                        variant={
-                          record.painLevel < 4
-                            ? "default"
-                            : record.painLevel < 7
-                            ? "secondary"
-                            : "destructive"
-                        }
-                      >
-                        {record.painLevel < 4
-                          ? "Leve"
-                          : record.painLevel < 7
-                          ? "Moderada"
-                          : "Intensa"}
-                      </Badge>
-                    </div>
-                    {record.notes && (
-                      <div className="mt-2">
-                        <Separator className="my-2" />
-                        <p className="text-sm">{record.notes}</p>
-                      </div>
-                    )}
-                  </div>
-                ))}
+            {allDataPoints.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                Nenhum dado de progresso disponível.
               </div>
+            ) : (
+              <>
+                <div className="h-64 w-full mb-6">
+                  <PainLevelChart painRecords={allDataPoints} />
+                </div>
+                
+                <div>
+                  <h3 className="font-medium mb-4">Histórico de Avaliações</h3>
+                  <div className="space-y-3">
+                    {allDataPoints
+                      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                      .map((data, index) => (
+                        <div key={index} className="border rounded-lg p-4">
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
+                            <div>
+                              <h4 className="font-medium">
+                                {format(new Date(data.date), "PPP", { locale: ptBR })}
+                              </h4>
+                              <p className="text-sm text-muted-foreground">
+                                Nível de dor: <span className="font-medium">{data.painLevel}/10</span>
+                              </p>
+                            </div>
+                            <Badge
+                              variant={
+                                data.painLevel < 4
+                                  ? "default"
+                                  : data.painLevel < 7
+                                  ? "secondary"
+                                  : "destructive"
+                              }
+                            >
+                              {data.painLevel < 4
+                                ? "Leve"
+                                : data.painLevel < 7
+                                ? "Moderada"
+                                : "Intensa"}
+                            </Badge>
+                          </div>
+                          <div className="text-xs text-muted-foreground mb-2">
+                            Tipo: {data.type === 'registro' ? 'Registro Manual' : 'Avaliação Online'}
+                          </div>
+                          {data.notes && (
+                            <div>
+                              <Separator className="my-2" />
+                              <p className="text-sm">{data.notes}</p>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              </>
             )}
           </CardContent>
         </Card>
