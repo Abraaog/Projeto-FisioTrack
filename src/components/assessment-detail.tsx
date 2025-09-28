@@ -52,7 +52,7 @@ export function AssessmentDetail({ assessmentId, onBack }: AssessmentDetailProps
 
   const handleSave = () => {
     if (isEditing) {
-      completeAssessment(assessment.id, painLevel, notes, 'therapist');
+      completeAssessment(assessment.id, assessment.patientId, painLevel, notes, 'therapist');
       setIsEditing(false);
       toast.success("Avaliação atualizada com sucesso!");
     }

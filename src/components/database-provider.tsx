@@ -1,5 +1,6 @@
-import { DatabaseProvider } from "@/hooks/useDatabaseMigration";
+import { useDatabaseMigration } from "@/hooks/useDatabaseMigration";
 
 export function DatabaseProvider({ children }: { children: React.ReactNode }) {
-  return <DatabaseProvider>{children}</DatabaseProvider>;
+  useDatabaseMigration();
+  return <>{children}</>;
 }
