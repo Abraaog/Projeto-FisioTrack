@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Assessment, AssessmentResponse } from "@/types/assessment";
 import { Patient } from "@/types/patient";
+import { ExerciseResponse } from "@/types/exercise";
 import { db } from "@/lib/database";
 
 export const useAssessments = () => {
@@ -63,7 +64,14 @@ export const useAssessments = () => {
     );
   };
 
-  const completeAssessment = (assessmentId: string, patientId: string, painLevel: number, notes?: string, submittedBy: 'patient' | 'therapist' = 'patient') => {
+  const completeAssessment = (
+    assessmentId: string, 
+    patientId: string, 
+    painLevel: number, 
+    notes?: string, 
+    submittedBy: 'patient' | 'therapist' = 'patient',
+    exerciseResponses?: ExerciseResponse[]
+  ) => {
     // Create response
     const newResponse: AssessmentResponse = {
       id: Date.now().toString(),
@@ -90,6 +98,11 @@ export const useAssessments = () => {
         assessment.id === assessmentId ? { ...assessment, ...updateData } : assessment
       )
     );
+    
+    // Store exercise responses in localStorage for now (could be added to database later)
+    if (exerciseResponses && exerciseResponses.length > 0) {
+      localStorage.setItem(`exercise-responses-${assessmentId}`, JSON.stringify(exerciseResponses));
+    }
     
     return newResponse;
   };

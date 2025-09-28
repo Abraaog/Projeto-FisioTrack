@@ -5,9 +5,45 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
+import { ExerciseList } from "@/components/exercise-list";
 import { useAssessments } from "@/hooks/useAssessments";
 import { usePatients } from "@/hooks/usePatients";
 import { toast } from "sonner";
+import { Exercise, ExerciseResponse } from "@/types/exercise";
+
+// Lista de exercícios pré-definidos
+const predefinedExercises: Exercise[] = [
+  {
+    id: "1",
+    name: "Alongamento Lombar",
+    description: "Deitado de costas, puxar os joelhos para o peito"
+  },
+  {
+    id: "2", 
+    name: "Ponte",
+    description: "Deitado de costas, elevar o quadril do chão"
+  },
+  {
+    id: "3",
+    name: "Prancha Isométrica", 
+    description: "Posição de prancha, manter o corpo reto"
+  },
+  {
+    id: "4",
+    name: "Cadeira de Natação",
+    description: "Deitado de barriga para baixo, levantar braços e pernas"
+  },
+  {
+    id: "5",
+    name: "Marcha no Lugar",
+    description: "Ficar em pé e levantar os joelhos alternadamente"
+  },
+  {
+    id: "6",
+    name: "Rotação de Tronco",
+    description: "Sentado, girar o corpo suavemente para os lados"
+  }
+];
 
 export function Assessment() {
   const { id } = useParams<{ id: string }>();
@@ -16,6 +52,7 @@ export function Assessment() {
   const { getPatient } = usePatients();
   const [painLevel, setPainLevel] = useState<number>(5);
   const [notes, setNotes] = useState<string>("");
+  const [exerciseResponses, setExerciseResponses] = useState<ExerciseResponse[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const assessment = getAssessmentById(id || "");
@@ -84,15 +121,30 @@ export function Assessment() {
     );
   }
 
+  const handleExerciseChange = (exerciseId: string, completed: boolean) => {
+    setExerciseResponses(prev => {
+      const existing = prev.find(r => r.exerciseId === exerciseId);
+      if (existing) {
+        return prev.map(r => r.exerciseId === exerciseId ? { ...r, completed } : r);
+      } else {
+        const exercise = predefinedExercises.find(e => e.id === exerciseId);
+        if (exercise) {
+          return [...prev, { exerciseId, exerciseName: exercise.name, completed }];
+        }
+        return prev;
+      }
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     
     try {
-      completeAssessment(assessment.id, assessment.patientId, painLevel, notes, 'patient');
+      completeAssessment(assessment.id, assessment.patientId, painLevel, notes, 'patient', exerciseResponses);
       
       toast.success("Avaliação enviada com sucesso!", {
-        description: "Obrigado por compartilhar seu nível de dor.",
+        description: "Obrigado por compartilhar seu nível de dor e exercícios.",
       });
       
       // Redirecionar após um breve delay
@@ -112,9 +164,19 @@ export function Assessment() {
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-center">Avaliação de Progresso</CardTitle>
+          <p className="text-center text-muted-foreground">
+            Olá {patient?.name || 'Paciente'}, por favor responda as perguntas abaixo
+          </p>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Lista de Exercícios */}
+            <ExerciseList 
+              exercises={predefinedExercises}
+              onExerciseChange={handleExerciseChange}
+            />
+
+            {/* Nível de Dor */}
             <div className="space-y-4">
               <Label className="text-center block">Qual seu nível de dor hoje?</Label>
               <div className="pt-4">
@@ -133,13 +195,14 @@ export function Assessment() {
               </div>
             </div>
 
+            {/* Observações */}
             <div className="space-y-2">
               <Label htmlFor="notes">Observações (opcional)</Label>
               <Textarea
                 id="notes"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="Adicione observações sobre sua dor..."
+                placeholder="Adicione observações sobre sua dor ou como se sente hoje..."
                 rows={3}
               />
             </div>
