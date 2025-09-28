@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Assessment, AssessmentResponse } from "@/types/assessment";
+import { Patient } from "@/types/patient";
 
 const ASSESSMENTS_STORAGE_KEY = "fisiotrack-assessments";
 const ASSESSMENT_RESPONSES_STORAGE_KEY = "fisiotrack-assessment-responses";
@@ -21,6 +22,7 @@ export const useAssessments = () => {
           createdAt: new Date(assessment.createdAt),
           expiresAt: new Date(assessment.expiresAt),
           completedAt: assessment.completedAt ? new Date(assessment.completedAt) : undefined,
+          sentAt: assessment.sentAt ? new Date(assessment.sentAt) : undefined,
         }));
         setAssessments(assessmentsWithDates);
       } catch (error) {
@@ -53,19 +55,43 @@ export const useAssessments = () => {
     localStorage.setItem(ASSESSMENT_RESPONSES_STORAGE_KEY, JSON.stringify(responses));
   }, [responses]);
 
-  const createAssessment = (patientId: string) => {
+  const createAssessment = (patient: Patient) => {
     const newAssessment: Assessment = {
       id: Date.now().toString(),
-      patientId,
+      patientId: patient.id,
+      patientName: patient.name,
       createdAt: new Date(),
       expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
       isCompleted: false,
+      isSentToPatient: false,
     };
     setAssessments((prev) => [...prev, newAssessment]);
     return newAssessment;
   };
 
-  const completeAssessment = (assessmentId: string, painLevel: number, notes?: string) => {
+  const sendAssessmentToPatient = (assessmentId: string) => {
+    setAssessments((prev) =>
+      prev.map((assessment) =>
+        assessment.id === assessmentId
+          ? {
+              ...assessment,
+              isSentToPatient: true,
+              sentAt: new Date(),
+            }
+          : assessment
+      )
+    );
+  };
+
+  const updateAssessment = (assessmentId: string, updates: Partial<Assessment>) => {
+    setAssessments((prev) =>
+      prev.map((assessment) =>
+        assessment.id === assessmentId ? { ...assessment, ...updates } : assessment
+      )
+    );
+  };
+
+  const completeAssessment = (assessmentId: string, painLevel: number, notes?: string, submittedBy: 'patient' | 'therapist' = 'patient') => {
     // Create response
     const newResponse: AssessmentResponse = {
       id: Date.now().toString(),
@@ -73,6 +99,7 @@ export const useAssessments = () => {
       painLevel,
       notes,
       submittedAt: new Date(),
+      submittedBy,
     };
     
     setResponses((prev) => [...prev, newResponse]);
@@ -107,13 +134,36 @@ export const useAssessments = () => {
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   };
 
+  const getPendingAssessments = () => {
+    return assessments
+      .filter((assessment) => !assessment.isSentToPatient && !assessment.isCompleted)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  };
+
+  const getSentAssessments = () => {
+    return assessments
+      .filter((assessment) => assessment.isSentToPatient && !assessment.isCompleted)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  };
+
+  const getCompletedAssessments = () => {
+    return assessments
+      .filter((assessment) => assessment.isCompleted)
+      .sort((a, b) => new Date(b.completedAt!).getTime() - new Date(a.completedAt!).getTime());
+  };
+
   return {
     assessments,
     responses,
     createAssessment,
+    sendAssessmentToPatient,
+    updateAssessment,
     completeAssessment,
     getAssessmentById,
     getAssessmentResponse,
     getPatientAssessments,
+    getPendingAssessments,
+    getSentAssessments,
+    getCompletedAssessments,
   };
 };
