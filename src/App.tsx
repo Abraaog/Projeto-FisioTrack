@@ -8,6 +8,7 @@ import NotFound from "./pages/NotFound";
 import { PatientDetail } from "@/components/patient-detail";
 import Assessment from "./pages/Assessment";
 import { AssessmentDetail } from "@/components/assessment-detail";
+import { DatabaseProvider } from "@/components/database-provider";
 
 const queryClient = new QueryClient();
 
@@ -16,18 +17,20 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/patients" element={<Index />} />
-          <Route path="/assessments" element={<Index />} />
-          <Route path="/patient/:id" element={<PatientDetail />} />
-          <Route path="/assessment/:id" element={<Assessment />} />
-          <Route path="/assessment-detail/:id" element={<AssessmentDetail />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <DatabaseProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/patients" element={<Index />} />
+            <Route path="/assessments" element={<Index />} />
+            <Route path="/patient/:id" element={<PatientDetail />} />
+            <Route path="/assessment/:id" element={<Assessment />} />
+            <Route path="/assessment-detail/:id" element={<AssessmentDetail />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </DatabaseProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

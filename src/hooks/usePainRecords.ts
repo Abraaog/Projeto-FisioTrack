@@ -1,51 +1,44 @@
 import { useState, useEffect } from "react";
 import { PainRecord } from "@/types/pain-record";
-
-const PAIN_RECORDS_STORAGE_KEY = "fisiotrack-pain-records";
+import { db } from "@/lib/database";
 
 export const usePainRecords = () => {
   const [painRecords, setPainRecords] = useState<PainRecord[]>([]);
 
-  // Load pain records from localStorage on initial render
+  // Carregar registros de dor do banco de dados
   useEffect(() => {
-    const storedRecords = localStorage.getItem(PAIN_RECORDS_STORAGE_KEY);
-    if (storedRecords) {
+    const loadPainRecords = async () => {
       try {
-        const parsedRecords = JSON.parse(storedRecords);
-        // Convert date strings back to Date objects
-        const recordsWithDates = parsedRecords.map((record: any) => ({
-          ...record,
-          date: new Date(record.date),
-        }));
-        setPainRecords(recordsWithDates);
+        const allRecords = await db.painRecords.toArray();
+        setPainRecords(allRecords);
       } catch (error) {
-        console.error("Failed to parse pain records from localStorage", error);
-        setPainRecords([]);
+        console.error("Erro ao carregar registros de dor:", error);
       }
-    }
-  }, []);
+    };
 
-  // Save pain records to localStorage whenever they change
-  useEffect(() => {
-    localStorage.setItem(PAIN_RECORDS_STORAGE_KEY, JSON.stringify(painRecords));
-  }, [painRecords]);
+    loadPainRecords();
+  }, []);
 
   const addPainRecord = (record: Omit<PainRecord, "id">) => {
     const newRecord: PainRecord = {
       id: Date.now().toString(),
       ...record,
     };
+    
+    db.painRecords.add(newRecord);
     setPainRecords((prev) => [...prev, newRecord]);
     return newRecord;
   };
 
   const updatePainRecord = (id: string, updates: Partial<PainRecord>) => {
+    db.painRecords.update(id, updates);
     setPainRecords((prev) =>
       prev.map((record) => (record.id === id ? { ...record, ...updates } : record))
     );
   };
 
   const deletePainRecord = (id: string) => {
+    db.painRecords.delete(id);
     setPainRecords((prev) => prev.filter((record) => record.id !== id));
   };
 

@@ -1,59 +1,28 @@
 import { useState, useEffect } from "react";
 import { Assessment, AssessmentResponse } from "@/types/assessment";
 import { Patient } from "@/types/patient";
-
-const ASSESSMENTS_STORAGE_KEY = "fisiotrack-assessments";
-const ASSESSMENT_RESPONSES_STORAGE_KEY = "fisiotrack-assessment-responses";
+import { db } from "@/lib/database";
 
 export const useAssessments = () => {
   const [assessments, setAssessments] = useState<Assessment[]>([]);
   const [responses, setResponses] = useState<AssessmentResponse[]>([]);
 
-  // Load assessments and responses from localStorage
+  // Carregar avaliações e respostas do banco de dados
   useEffect(() => {
-    const storedAssessments = localStorage.getItem(ASSESSMENTS_STORAGE_KEY);
-    const storedResponses = localStorage.getItem(ASSESSMENT_RESPONSES_STORAGE_KEY);
-    
-    if (storedAssessments) {
+    const loadData = async () => {
       try {
-        const parsedAssessments = JSON.parse(storedAssessments);
-        const assessmentsWithDates = parsedAssessments.map((assessment: any) => ({
-          ...assessment,
-          createdAt: new Date(assessment.createdAt),
-          expiresAt: new Date(assessment.expiresAt),
-          completedAt: assessment.completedAt ? new Date(assessment.completedAt) : undefined,
-          sentAt: assessment.sentAt ? new Date(assessment.sentAt) : undefined,
-        }));
-        setAssessments(assessmentsWithDates);
+        const allAssessments = await db.assessments.toArray();
+        const allResponses = await db.assessmentResponses.toArray();
+        
+        setAssessments(allAssessments);
+        setResponses(allResponses);
       } catch (error) {
-        console.error("Failed to parse assessments from localStorage", error);
-        setAssessments([]);
+        console.error("Erro ao carregar avaliações:", error);
       }
-    }
-    
-    if (storedResponses) {
-      try {
-        const parsedResponses = JSON.parse(storedResponses);
-        const responsesWithDates = parsedResponses.map((response: any) => ({
-          ...response,
-          submittedAt: new Date(response.submittedAt),
-        }));
-        setResponses(responsesWithDates);
-      } catch (error) {
-        console.error("Failed to parse responses from localStorage", error);
-        setResponses([]);
-      }
-    }
+    };
+
+    loadData();
   }, []);
-
-  // Save assessments and responses to localStorage
-  useEffect(() => {
-    localStorage.setItem(ASSESSMENTS_STORAGE_KEY, JSON.stringify(assessments));
-  }, [assessments]);
-
-  useEffect(() => {
-    localStorage.setItem(ASSESSMENT_RESPONSES_STORAGE_KEY, JSON.stringify(responses));
-  }, [responses]);
 
   const createAssessment = (patient: Patient) => {
     const newAssessment: Assessment = {
@@ -65,25 +34,28 @@ export const useAssessments = () => {
       isCompleted: false,
       isSentToPatient: false,
     };
+    
+    db.assessments.add(newAssessment);
     setAssessments((prev) => [...prev, newAssessment]);
     return newAssessment;
   };
 
   const sendAssessmentToPatient = (assessmentId: string) => {
+    const updateData = {
+      isSentToPatient: true,
+      sentAt: new Date(),
+    };
+    
+    db.assessments.update(assessmentId, updateData);
     setAssessments((prev) =>
       prev.map((assessment) =>
-        assessment.id === assessmentId
-          ? {
-              ...assessment,
-              isSentToPatient: true,
-              sentAt: new Date(),
-            }
-          : assessment
+        assessment.id === assessmentId ? { ...assessment, ...updateData } : assessment
       )
     );
   };
 
   const updateAssessment = (assessmentId: string, updates: Partial<Assessment>) => {
+    db.assessments.update(assessmentId, updates);
     setAssessments((prev) =>
       prev.map((assessment) =>
         assessment.id === assessmentId ? { ...assessment, ...updates } : assessment
@@ -103,18 +75,19 @@ export const useAssessments = () => {
       submittedBy,
     };
     
+    db.assessmentResponses.add(newResponse);
     setResponses((prev) => [...prev, newResponse]);
     
     // Update assessment
+    const updateData = {
+      isCompleted: true,
+      completedAt: new Date(),
+    };
+    
+    db.assessments.update(assessmentId, updateData);
     setAssessments((prev) =>
       prev.map((assessment) =>
-        assessment.id === assessmentId
-          ? {
-              ...assessment,
-              isCompleted: true,
-              completedAt: new Date(),
-            }
-          : assessment
+        assessment.id === assessmentId ? { ...assessment, ...updateData } : assessment
       )
     );
     

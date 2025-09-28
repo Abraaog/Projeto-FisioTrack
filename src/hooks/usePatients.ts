@@ -1,34 +1,23 @@
 import { useState, useEffect } from "react";
 import { Patient } from "@/types/patient";
-
-const PATIENTS_STORAGE_KEY = "fisiotrack-patients";
+import { db } from "@/lib/database";
 
 export const usePatients = () => {
   const [patients, setPatients] = useState<Patient[]>([]);
 
-  // Load patients from localStorage on initial render
+  // Carregar pacientes do banco de dados
   useEffect(() => {
-    const storedPatients = localStorage.getItem(PATIENTS_STORAGE_KEY);
-    if (storedPatients) {
+    const loadPatients = async () => {
       try {
-        const parsedPatients = JSON.parse(storedPatients);
-        // Convert date strings back to Date objects
-        const patientsWithDates = parsedPatients.map((patient: any) => ({
-          ...patient,
-          createdAt: new Date(patient.createdAt),
-        }));
-        setPatients(patientsWithDates);
+        const allPatients = await db.patients.toArray();
+        setPatients(allPatients);
       } catch (error) {
-        console.error("Failed to parse patients from localStorage", error);
-        setPatients([]);
+        console.error("Erro ao carregar pacientes:", error);
       }
-    }
-  }, []);
+    };
 
-  // Save patients to localStorage whenever they change
-  useEffect(() => {
-    localStorage.setItem(PATIENTS_STORAGE_KEY, JSON.stringify(patients));
-  }, [patients]);
+    loadPatients();
+  }, []);
 
   const addPatient = (patient: Omit<Patient, "id" | "createdAt">) => {
     const newPatient: Patient = {
@@ -36,17 +25,21 @@ export const usePatients = () => {
       ...patient,
       createdAt: new Date(),
     };
+    
+    db.patients.add(newPatient);
     setPatients((prev) => [...prev, newPatient]);
     return newPatient;
   };
 
   const updatePatient = (id: string, updates: Partial<Patient>) => {
+    db.patients.update(id, updates);
     setPatients((prev) =>
       prev.map((patient) => (patient.id === id ? { ...patient, ...updates } : patient))
     );
   };
 
   const deletePatient = (id: string) => {
+    db.patients.delete(id);
     setPatients((prev) => prev.filter((patient) => patient.id !== id));
   };
 
