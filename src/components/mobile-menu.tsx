@@ -4,12 +4,11 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, Users, FileText, Home } from "lucide-react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Link, useLocation } from "react-router-dom";
 
 export function MobileMenu() {
   const [open, setOpen] = useState(false);
-  const pathname = usePathname();
+  const location = useLocation();
 
   const menuItems = [
     { href: "/", label: "Início", icon: Home },
@@ -19,9 +18,9 @@ export function MobileMenu() {
 
   const isActive = (href: string) => {
     if (href === "/") {
-      return pathname === "/";
+      return location.pathname === "/";
     }
-    return pathname.startsWith(href);
+    return location.pathname.startsWith(href);
   };
 
   return (
@@ -43,7 +42,7 @@ export function MobileMenu() {
                 return (
                   <li key={item.href}>
                     <Link
-                      href={item.href}
+                      to={item.href}
                       onClick={() => setOpen(false)}
                       className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                         isActive(item.href)

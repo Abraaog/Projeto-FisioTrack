@@ -1,12 +1,12 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Link } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Users, FileText, Home } from "lucide-react";
 
 export function DesktopMenu() {
-  const pathname = usePathname();
+  const location = useLocation();
 
   const menuItems = [
     { href: "/", label: "Início", icon: Home },
@@ -16,9 +16,9 @@ export function DesktopMenu() {
 
   const isActive = (href: string) => {
     if (href === "/") {
-      return pathname === "/";
+      return location.pathname === "/";
     }
-    return pathname.startsWith(href);
+    return location.pathname.startsWith(href);
   };
 
   return (
@@ -28,7 +28,7 @@ export function DesktopMenu() {
         return (
           <Link
             key={item.href}
-            href={item.href}
+            to={item.href}
             className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
               isActive(item.href)
                 ? "bg-primary text-primary-foreground"
