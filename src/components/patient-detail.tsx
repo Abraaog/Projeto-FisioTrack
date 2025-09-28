@@ -4,9 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Plus } from "lucide-react";
+import { ArrowLeft, Plus, FileText } from "lucide-react";
 import { usePatients } from "@/hooks/usePatients";
 import { usePainRecords } from "@/hooks/usePainRecords";
+import { useAssessments } from "@/hooks/useAssessments";
 import { PainLevelChart } from "@/components/pain-level-chart";
 import { PainRecordForm } from "@/components/pain-record-form";
 import {
@@ -18,12 +19,14 @@ import {
 } from "@/components/ui/dialog";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { toast } from "sonner";
 
 export function PatientDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { getPatient } = usePatients();
   const { getPainRecordsByPatient, addPainRecord } = usePainRecords();
+  const { createAssessment } = useAssessments();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const patient = getPatient(id || "");
@@ -46,6 +49,24 @@ export function PatientDetail() {
     setIsDialogOpen(false);
   };
 
+  const handleCreateAssessment = () => {
+    try {
+      const assessment = createAssessment(patient.id);
+      const assessmentLink = `${window.location.origin}/assessment/${assessment.id}`;
+      
+      // Copiar link para a área de transferência
+      navigator.clipboard.writeText(assessmentLink);
+      
+      toast.success("Avaliação criada com sucesso!", {
+        description: "O link foi copiado para a área de transferência.",
+      });
+    } catch (error) {
+      toast.error("Erro ao criar avaliação", {
+        description: "Não foi possível criar a avaliação. Tente novamente.",
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4">
@@ -63,20 +84,26 @@ export function PatientDetail() {
                   Cadastrado em {format(new Date(patient.createdAt), "PPP", { locale: ptBR })}
                 </p>
               </div>
-              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button>
-                    <Plus className="mr-2 h-4 w-4" />
-                    Registrar Dor
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Registrar Nível de Dor</DialogTitle>
-                  </DialogHeader>
-                  <PainRecordForm onSubmit={handleAddPainRecord} />
-                </DialogContent>
-              </Dialog>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <Button onClick={handleCreateAssessment}>
+                  <FileText className="mr-2 h-4 w-4" />
+                  Criar e Enviar Nova Avaliação
+                </Button>
+                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button variant="secondary">
+                      <Plus className="mr-2 h-4 w-4" />
+                      Registrar Dor
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Registrar Nível de Dor</DialogTitle>
+                    </DialogHeader>
+                    <PainRecordForm onSubmit={handleAddPainRecord} />
+                  </DialogContent>
+                </Dialog>
+              </div>
             </div>
           </CardHeader>
           <CardContent>
