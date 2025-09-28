@@ -161,6 +161,85 @@ Para analisar o progresso de um paciente e interpretar os dados coletados, siga 
 - Considere fatores externos que possam influenciar o nível de dor
 - Use os dados para tomar decisões informadas sobre o tratamento
 
+## Instruções para o Paciente
+
+Olá! Seu fisioterapeuta enviou uma avaliação para você através do FisioTrack. Para responder, siga estes passos simples:
+
+1. **Clique no link** que foi enviado para você
+2. **Preencha os campos** com atenção:
+   - **Exercícios realizados**: Marque todos os exercícios que você fez hoje
+   - **Nível de dor**: Use a escala deslizante para indicar como está sua dor hoje (0 = sem dor, 10 = dor muito intensa)
+   - **Observações**: Adicite qualquer comentário sobre como se sente ou sobre os exercícios (opcional)
+3. **Clique em "Enviar Resposta"** para finalizar
+
+Seu fisioterapeuta receberá automaticamente suas respostas e poderá acompanhar seu progresso. Avaliações devem ser respondidas dentro de 7 dias após o envio.
+
+## Detalhes Técnicos (Para Desenvolvedores)
+
+### Tecnologias Utilizadas
+
+**Frontend:**
+- **React 18.3.1** - Biblioteca principal para construção da interface
+- **TypeScript** - Superset do JavaScript com tipagem estática
+- **React Router DOM 6.26.2** - Gerenciamento de rotas e navegação
+- **Tailwind CSS 3.4.11** - Framework CSS para estilização responsiva
+- **shadcn/ui** - Biblioteca de componentes UI baseada em Radix UI
+- **Lucide React 0.462.0** - Biblioteca de ícones
+- **Recharts 2.12.7** - Biblioteca para criação de gráficos
+- **Sonner 1.5.0** - Biblioteca para notificações toast
+
+**Backend e Dados:**
+- **Dexie 4.2.0** - Banco de dados IndexedDB para armazenamento local
+- **React Query 5.56.2** - Gerenciamento de estado e cache de dados
+- **date-fns 3.6.0** - Biblioteca para manipulação de datas
+
+**Ferramentas de Desenvolvimento:**
+- **Vite 6.3.4** - Ferramenta de build e desenvolvimento rápido
+- **ESLint 9.9.0** - Análise de código para qualidade e padrões
+- **PostCSS 8.4.47** - Processamento de CSS com plugins
+- **Autoprefixer 10.4.20** - Adição de prefixos CSS automaticamente
+
+### Configuração do Ambiente
+
+**Pré-requisitos:**
+- Node.js (versão 18 ou superior)
+- npm ou yarn (gerenciador de pacotes)
+
+**Passos de Instalação:**
+
+1. **Clone o repositório:**
+   ```bash
+   git clone <URL-do-repositório>
+   cd fisiotrack
+   ```
+
+2. **Instale as dependências:**
+   ```bash
+   npm install
+   ```
+
+3. **Inicie o servidor de desenvolvimento:**
+   ```bash
+   npm run dev
+   ```
+
+4. **Acesse a aplicação:**
+   Abra seu navegador e acesse `http://localhost:8080`
+
+**Scripts Disponíveis:**
+- `npm run dev`: Inicia o servidor de desenvolvimento
+- `npm run build`: Gera a build de produção
+- `npm run preview`: Visualiza a build de produção
+- `npm run lint`: Executa a análise de código
+
+**Variáveis de Ambiente:**
+O projeto utiliza variáveis de ambiente para configuração. Crie um arquivo `.env` na raiz do projeto:
+
+```env
+VITE_API_URL=http://localhost:3001
+VITE_APP_NAME=FisioTrack
+```
+
 ## Guia de Instalação e Configuração
 
 ### Pré-requisitos
