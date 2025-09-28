@@ -8,6 +8,7 @@ import { PatientForm } from "@/components/ui/patient-form";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -67,6 +68,12 @@ export function PatientList() {
               <DialogTitle>
                 {editingPatient ? "Editar Paciente" : "Adicionar Novo Paciente"}
               </DialogTitle>
+              <DialogDescription>
+                {editingPatient 
+                  ? "Atualize as informações do paciente abaixo."
+                  : "Preencha os campos abaixo para adicionar um novo paciente."
+                }
+              </DialogDescription>
             </DialogHeader>
             <PatientForm
               onSubmit={editingPatient ? handleUpdatePatient : handleAddPatient}
