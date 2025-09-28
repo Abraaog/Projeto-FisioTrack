@@ -63,6 +63,7 @@ export const useAuth = () => {
           name: user.name,
           email: user.email,
           role: user.role,
+          password: user.password, // Adicionando a propriedade password ausente
         },
       };
 
