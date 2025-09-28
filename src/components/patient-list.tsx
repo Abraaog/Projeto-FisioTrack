@@ -49,8 +49,11 @@ export function PatientList() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Pacientes</h1>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold">Pacientes</h1>
+          <p className="text-gray-600 mt-1">Gerencie seus pacientes e suas avaliações</p>
+        </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button onClick={() => setEditingPatient(null)}>
@@ -58,7 +61,7 @@ export function PatientList() {
               Adicionar Novo Paciente
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-w-md">
             <DialogHeader>
               <DialogTitle>
                 {editingPatient ? "Editar Paciente" : "Adicionar Novo Paciente"}
@@ -75,11 +78,14 @@ export function PatientList() {
 
       {patients.length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-muted-foreground">Nenhum paciente cadastrado ainda.</p>
-          <p className="text-sm mt-2">Clique no botão acima para adicionar seu primeiro paciente.</p>
+          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Users className="h-8 w-8 text-gray-400" />
+          </div>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhum paciente cadastrado</h3>
+          <p className="text-gray-600 mb-4">Clique no botão acima para adicionar seu primeiro paciente.</p>
         </div>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {patients.map((patient) => (
             <PatientCard
               key={patient.id}

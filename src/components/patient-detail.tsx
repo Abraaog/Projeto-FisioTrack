@@ -35,9 +35,13 @@ export function PatientDetail() {
 
   if (!patient) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen">
-        <h2 className="text-2xl font-bold mb-4">Paciente não encontrado</h2>
-        <Button onClick={() => navigate("/")}>Voltar para a lista</Button>
+      <div className="flex flex-col items-center justify-center min-h-screen p-4">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-4">Paciente não encontrado</h2>
+          <Button onClick={() => navigate("/")} className="w-full sm:w-auto">
+            Voltar para a lista
+          </Button>
+        </div>
       </div>
     );
   }
@@ -54,7 +58,6 @@ export function PatientDetail() {
     try {
       const assessment = createAssessment(patient);
       toast.success("Avaliação criada com sucesso!");
-      // Navegar para a página de detalhes da avaliação
       navigate(`/assessment/${assessment.id}`);
     } catch (error) {
       toast.error("Erro ao criar avaliação", {
@@ -80,35 +83,45 @@ export function PatientDetail() {
   ].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto px-4">
-        <Button variant="outline" onClick={() => navigate(-1)} className="mb-6">
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Voltar
-        </Button>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header com botão voltar */}
+      <div className="sticky top-0 z-40 bg-white border-b shadow-sm">
+        <div className="container mx-auto px-4 py-4">
+          <Button 
+            variant="ghost" 
+            onClick={() => navigate(-1)} 
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Voltar
+          </Button>
+        </div>
+      </div>
 
+      <div className="container mx-auto px-4 py-6">
+        {/* Informações do paciente */}
         <Card className="mb-6">
           <CardHeader>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <div>
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+              <div className="flex-1">
                 <CardTitle className="text-2xl">{patient.name}</CardTitle>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Cadastrado em {format(new Date(patient.createdAt), "PPP", { locale: ptBR })}
+                <p className="text-gray-600 mt-1">
+                  Cadastrado em {format(new Date(patient.createdAt), "dd/MM/yyyy", { locale: ptBR })}
                 </p>
               </div>
-              <div className="flex flex-col sm:flex-row gap-2">
-                <Button onClick={handleCreateAssessment}>
+              <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                <Button onClick={handleCreateAssessment} className="w-full sm:w-auto">
                   <FileText className="mr-2 h-4 w-4" />
-                  Criar Nova Avaliação
+                  Criar Avaliação
                 </Button>
                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                   <DialogTrigger asChild>
-                    <Button variant="secondary">
+                    <Button variant="secondary" className="w-full sm:w-auto">
                       <Plus className="mr-2 h-4 w-4" />
                       Registrar Dor
                     </Button>
                   </DialogTrigger>
-                  <DialogContent>
+                  <DialogContent className="max-w-md">
                     <DialogHeader>
                       <DialogTitle>Registrar Nível de Dor</DialogTitle>
                     </DialogHeader>
@@ -119,14 +132,14 @@ export function PatientDetail() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="flex items-center">
-                <span className="text-muted-foreground mr-2">Email:</span>
-                <Badge variant="secondary">{patient.email}</Badge>
+                <span className="text-gray-600 mr-2">Email:</span>
+                <Badge variant="secondary" className="truncate">{patient.email}</Badge>
               </div>
               <div className="flex items-center">
-                <span className="text-muted-foreground mr-2">Telefone:</span>
-                <Badge variant="secondary">{patient.phone}</Badge>
+                <span className="text-gray-600 mr-2">Telefone:</span>
+                <Badge variant="secondary" className="truncate">{patient.phone}</Badge>
               </div>
             </div>
           </CardContent>
@@ -142,8 +155,14 @@ export function PatientDetail() {
           </CardHeader>
           <CardContent>
             {allDataPoints.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                Nenhum dado de progresso disponível.
+              <div className="text-center py-8">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <TrendingUp className="h-8 w-8 text-gray-400" />
+                </div>
+                <p className="text-gray-600">Nenhum dado de progresso disponível.</p>
+                <p className="text-sm text-gray-500 mt-2">
+                  Crie uma avaliação ou registre um nível de dor para começar.
+                </p>
               </div>
             ) : (
               <>
@@ -161,9 +180,9 @@ export function PatientDetail() {
                           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
                             <div>
                               <h4 className="font-medium">
-                                {format(new Date(data.date), "PPP", { locale: ptBR })}
+                                {format(new Date(data.date), "dd/MM/yyyy", { locale: ptBR })}
                               </h4>
-                              <p className="text-sm text-muted-foreground">
+                              <p className="text-sm text-gray-600">
                                 Nível de dor: <span className="font-medium">{data.painLevel}/10</span>
                               </p>
                             </div>
@@ -175,6 +194,7 @@ export function PatientDetail() {
                                   ? "secondary"
                                   : "destructive"
                               }
+                              className="text-xs"
                             >
                               {data.painLevel < 4
                                 ? "Leve"
@@ -183,7 +203,7 @@ export function PatientDetail() {
                                 : "Intensa"}
                             </Badge>
                           </div>
-                          <div className="text-xs text-muted-foreground mb-2">
+                          <div className="text-xs text-gray-500 mb-2">
                             Tipo: {data.type === 'registro' ? 'Registro Manual' : 'Avaliação Online'}
                           </div>
                           {data.notes && (
