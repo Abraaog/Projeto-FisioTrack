@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { MadeWithDyad } from "@/components/made-with-dyad";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
-import { LogOut } from "lucide-react";
+import { LogOut, User } from "lucide-react";
 
 export function Header() {
   const { user, logout } = useAuth();
@@ -41,7 +41,11 @@ export function Header() {
 
           {/* Botão de ação para mobile */}
           <div className="hidden md:block">
-            <Button variant="outline" size="sm">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => navigate("/patients")}
+            >
               Novo Paciente
             </Button>
           </div>
@@ -49,13 +53,22 @@ export function Header() {
           {/* Informações do usuário e logout */}
           <div className="flex items-center gap-2">
             {user && (
-              <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground">
-                <span>{user.name}</span>
+              <div className="flex items-center gap-2">
+                {/* Informações do usuário */}
+                <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-1">
+                    <User className="h-3 w-3" />
+                    <span>{user.name}</span>
+                  </div>
+                </div>
+                
+                {/* Botão de logout */}
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={handleLogout}
                   className="h-8 w-8 p-0"
+                  title="Sair"
                 >
                   <LogOut className="h-4 w-4" />
                 </Button>

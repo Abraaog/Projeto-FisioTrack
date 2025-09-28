@@ -52,17 +52,17 @@ export function PatientList() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold">Pacientes</h1>
-          <p className="text-gray-600 mt-1">Gerencie seus pacientes e suas avaliações</p>
+          <h1 className="text-2xl sm:text-3xl font-bold">Pacientes</h1>
+          <p className="text-gray-600 mt-1 text-sm sm:text-base">Gerencie seus pacientes e suas avaliações</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => setEditingPatient(null)}>
-              <Plus className="mr-2 h-4 w-4" />
+            <Button onClick={() => setEditingPatient(null)} className="w-full sm:w-auto">
+              <Plus className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
               Adicionar Novo Paciente
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-md">
+          <DialogContent className="max-w-md sm:max-w-lg">
             <DialogHeader>
               <DialogTitle>
                 {editingPatient ? "Editar Paciente" : "Adicionar Novo Paciente"}
@@ -78,15 +78,15 @@ export function PatientList() {
       </div>
 
       {patients.length === 0 ? (
-        <div className="text-center py-12">
+        <div className="text-center py-12 sm:py-16">
           <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <Users className="h-8 w-8 text-gray-400" />
           </div>
           <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhum paciente cadastrado</h3>
-          <p className="text-gray-600 mb-4">Clique no botão acima para adicionar seu primeiro paciente.</p>
+          <p className="text-gray-600 mb-4 text-sm sm:text-base">Clique no botão acima para adicionar seu primeiro paciente.</p>
         </div>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {patients.map((patient) => (
             <PatientCard
               key={patient.id}

@@ -14,14 +14,14 @@ export function PatientCard({ patient, onEdit, onDelete }: PatientCardProps) {
   const navigate = useNavigate();
 
   return (
-    <Card className="w-full hover:shadow-md transition-shadow duration-200">
+    <Card className="w-full hover:shadow-md transition-shadow duration-200 group">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex-1 min-w-0">
             <CardTitle className="text-lg font-medium truncate">{patient.name}</CardTitle>
             <p className="text-sm text-gray-500 truncate mt-1">{patient.email}</p>
           </div>
-          <div className="flex space-x-1 ml-2">
+          <div className="flex space-x-1 ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
             <Button
               variant="ghost"
               size="icon"
