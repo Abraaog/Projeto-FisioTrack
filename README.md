@@ -18,6 +18,149 @@ O FisioTrack é uma aplicação web desenvolvida para fisioterapeutas que busca 
 
 - **Histórico detalhado de todas as avaliações**: Registro completo de todas as avaliações realizadas, com datas, níveis de dor e observações detalhadas.
 
+## Guia de Uso para o Fisioterapeuta (Tutorial Passo a Passo)
+
+### 1. Como Acessar o Sistema
+
+Para começar a usar o FisioTrack, siga estes simples passos:
+
+1. **Abra seu navegador** e acesse o endereço da aplicação (normalmente `http://localhost:8080` durante o desenvolvimento)
+
+2. **Você será direcionado para a página de login**, que contém:
+   - O logo da aplicação "FisioTrack"
+   - O campo "Email" para inserir seu email profissional
+   - O campo "Senha" para inserir sua senha
+   - O botão "Entrar"
+
+3. **Insira suas credenciais**:
+   - **Email**: `fisio@fisiotrack.com`
+   - **Senha**: `fisio123`
+
+4. **Clique no botão "Entrar"** para acessar o sistema
+
+5. **Após o login bem-sucedido**, você será redirecionado para o dashboard principal, onde poderá ver:
+   - Abas para "Pacientes" e "Avaliações"
+   - Lista de pacientes cadastrados
+   - Status das avaliações pendentes, enviadas e concluídas
+
+**Dica**: Se você esquecer sua senha, entre em contato com o administrador do sistema para redefini-la.
+
+### 2. Como Adicionar um Novo Paciente
+
+Para cadastrar um novo paciente no sistema, siga estes passos:
+
+1. **No dashboard principal**, clique na aba **"Pacientes"** para visualizar a lista de pacientes existentes
+
+2. **Clique no botão "Adicionar Novo Paciente"** localizado no canto superior direito da tela
+
+3. **O formulário de cadastro será aberto** com os seguintes campos:
+   - **Nome completo**: Campo obrigatório para o nome completo do paciente
+   - **Email**: Campo obrigatório para o email do paciente (usado para identificação)
+   - **Telefone**: Campo obrigatório para o telefone do paciente
+
+4. **Preencha todos os campos obrigatórios** com as informações do paciente:
+   - Digite o nome completo do paciente no campo "Nome completo"
+   - Insira o email do paciente no campo "Email"
+   - Adicione o telefone do paciente no campo "Telefone"
+
+5. **Clique no botão "Adicionar"** para salvar as informações do paciente
+
+6. **Após o cadastro bem-sucedido**, o paciente aparecerá na lista de pacientes e você poderá:
+   - Visualizar os detalhes clicando no card do paciente
+   - Editar as informações clicando no ícone de lápis
+   - Remover o paciente clicando no ícone de lixeira
+
+**Importante**: Todos os campos são obrigatórios para garantir que você tenha informações completas para contato e identificação do paciente.
+
+### 3. Como Enviar uma Avaliação para um Paciente
+
+Para enviar uma avaliação para um paciente e monitorar seu progresso, siga estes passos:
+
+1. **No dashboard principal**, clique na aba **"Pacientes"** para visualizar a lista de pacientes
+
+2. **Clique no card do paciente** para o qual você deseja criar uma avaliação
+
+3. **Na página de detalhes do paciente**, você verá as informações do paciente e os botões de ação:
+   - **"Criar Avaliação"**: Clique neste botão para gerar uma nova avaliação
+
+4. **A avaliação será criada automaticamente** com:
+   - Data e hora de criação atuais
+   - Prazo de validade de 7 dias a partir da criação
+   - Status inicial como "Pendente"
+
+5. **Volte para o dashboard principal** e clique na aba **"Avaliações"**
+
+6. **Na lista de avaliações**, localize a avaliação recém-criada na seção **"Pendentes"**
+
+7. **Clique no card da avaliação** para abrir os detalhes
+
+8. **Clique no botão "Enviar para Paciente"** para gerar o link de avaliação
+
+9. **O sistema enviará a avaliação** e mudará o status para "Enviada"
+
+10. **Comunique ao paciente** que ele deve acessar o link recebido por email ou mensagem para responder a avaliação
+
+**Observações importantes**:
+- Cada avaliação tem um prazo de validade de 7 dias
+- Após o envio, o paciente receberá um link único para responder
+- Você pode acompanhar o status das avaliações na aba "Avaliações"
+- Avaliações enviadas mas não respondidas aparecem na seção "Enviadas"
+
+### 4. Como Analisar o Progresso de um Paciente
+
+Para analisar o progresso de um paciente e interpretar os dados coletados, siga estes passos:
+
+1. **No dashboard principal**, clique na aba **"Pacientes"**
+
+2. **Clique no card do paciente** cujo progresso você deseja analisar
+
+3. **Você será direcionado para a página de detalhes do paciente**, que contém:
+
+#### **Painel de Progresso com Gráfico**
+
+- **Gráfico de evolução da dor**: Um gráfico de linhas que mostra:
+  - **Eixo X (horizontal)**: Datas dos registros
+  - **Eixo Y (vertical)**: Nível de dor (escala de 0 a 10)
+  - **Linha azul**: Todos os registros de dor (manuais ou avaliações)
+  - **Pontos no gráfico**: Cada registro individual com data e nível de dor
+
+- **Interpretação do gráfico**:
+  - **Tendência ascendente**: Indica que a dor está aumentando, exigindo atenção
+  - **Tendência descendente**: Indica melhora no quadro do paciente
+  - **Linha estável**: Indica que o nível de dor se mantém constante
+  - **Pontos isolados**: Registros específicos que podem ser analisados individualmente
+
+#### **Histórico Detalhado de Avaliações**
+
+- **Rolando para baixo** na página, você encontrará o histórico completo de todas as avaliações e registros
+
+- **Cada item do histórico mostra**:
+  - **Data do registro**: Quando a avaliação foi respondida
+  - **Nível de dor**: O número de 0 a 10 informado pelo paciente
+  - **Tipo de registro**: Se foi feito manualmente pelo fisioterapeuta ou via avaliação online
+  - **Observações**: Comentários adicionais do paciente sobre sua condição
+  - **Classificação da dor**: 
+    - **Leve** (0-3): Dor leve, tratamento eficaz
+    - **Moderada** (4-6): Dor moderada, atenção necessária
+    - **Intensa** (7-10): Dor intensa, revisão do tratamento recomendada
+
+- **Exercícios realizados**: Se o paciente respondeu a avaliação online, você verá:
+  - Lista dos exercícios pré-definidos
+  - Quais exercícios foram marcados como realizados
+  - Data da resposta
+
+**Análise Clínica**:
+- Compare os registros ao longo do tempo para identificar padrões
+- Verifique se há correlação entre exercícios realizados e nível de dor
+- Use os dados para ajustar o tratamento fisioterapêutico
+- Documente a evolução para acompanhamento contínuo
+
+**Dicas de Análise**:
+- Registros frequentes (2-3 vezes por semana) fornecem dados mais confiáveis
+- Combine a análise gráfica com as observações textuais do paciente
+- Considere fatores externos que possam influenciar o nível de dor
+- Use os dados para tomar decisões informadas sobre o tratamento
+
 ## Guia de Instalação e Configuração
 
 ### Pré-requisitos
