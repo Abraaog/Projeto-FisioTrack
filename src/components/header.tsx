@@ -4,8 +4,19 @@ import { MobileMenu } from "@/components/mobile-menu";
 import { DesktopMenu } from "@/components/desktop-menu";
 import { Button } from "@/components/ui/button";
 import { MadeWithDyad } from "@/components/made-with-dyad";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
+import { LogOut } from "lucide-react";
 
 export function Header() {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4">
@@ -33,6 +44,23 @@ export function Header() {
             <Button variant="outline" size="sm">
               Novo Paciente
             </Button>
+          </div>
+
+          {/* Informações do usuário e logout */}
+          <div className="flex items-center gap-2">
+            {user && (
+              <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground">
+                <span>{user.name}</span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleLogout}
+                  className="h-8 w-8 p-0"
+                >
+                  <LogOut className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </div>
